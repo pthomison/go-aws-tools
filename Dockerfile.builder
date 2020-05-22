@@ -15,5 +15,6 @@ ENV GOCACHE /tmp/
 
 RUN go get github.com/spf13/cobra/cobra
 RUN go get -u github.com/aws/aws-sdk-go/...
+RUN go get golang.org/x/crypto/ssh
 
 CMD /bin/bash

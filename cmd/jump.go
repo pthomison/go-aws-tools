@@ -1,17 +1,15 @@
 package cmd
 
 import (
-	"fmt"
 	"github.com/spf13/cobra"
 
 	awsUtils "github.com/pthomison/go-aws-tools/pkg"
-	"github.com/pthomison/go-aws-tools/internal"
 )
 
 const (
-	bastionFlag = "bastion"
-	nameFlag    = "name"
-	idFlag      = "id"
+	jumpBastionFlag = "bastion"
+	jumpNameFlag    = "name"
+	jumpIdFlag      = "id"
 )
 
 var jumpCmd = &cobra.Command{
@@ -24,24 +22,18 @@ var jumpCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(jumpCmd)
-	jumpCmd.PersistentFlags().String(bastionFlag, "", "")
-	jumpCmd.PersistentFlags().String(nameFlag, "", "")
-	jumpCmd.PersistentFlags().String(idFlag, "", "")
+	jumpCmd.PersistentFlags().String(jumpBastionFlag, "", "")
+	jumpCmd.PersistentFlags().String(jumpNameFlag, "", "")
+	jumpCmd.PersistentFlags().String(jumpIdFlag, "", "")
 }
 
 func jumpCobra(cmd *cobra.Command, args []string) {
-	bastionF := cmd.Flags().Lookup(bastionFlag)
-	nameF    := cmd.Flags().Lookup(nameFlag)
-	idF      := cmd.Flags().Lookup(idFlag)
+	bastionF := cmd.Flags().Lookup(jumpBastionFlag)
+	nameF    := cmd.Flags().Lookup(jumpNameFlag)
+	idF      := cmd.Flags().Lookup(jumpIdFlag)
 
 	// mutually exclussive flag checking
-	if !nameF.Changed && !idF.Changed {
-		internal.HandleGenericError(fmt.Errorf("Must supply a target"))
-		return
-	} else if nameF.Changed && idF.Changed {
-		internal.HandleGenericError(fmt.Errorf("Must supply a single target"))
-		return
-	}
+	mutualExclusiveFlag(nameF, idF)
 
 	var instanceId string
 	var bastionId string
@@ -55,7 +47,7 @@ func jumpCobra(cmd *cobra.Command, args []string) {
 		instanceId, err = client.FindInstanceByName(nameF.Value.String())
 
 		if err != nil {
-			internal.HandleGenericError(err)
+			handleGenericError(err)
 			return
 		}
 	} else {
@@ -65,14 +57,14 @@ func jumpCobra(cmd *cobra.Command, args []string) {
 	// generate temporary in memory key
 	privateKey, rsaPublicKey, err := awsUtils.GenerateInMemoryKey()
 	if err != nil {
-		internal.HandleGenericError(err)
+		handleGenericError(err)
 		return
 	}
 
 	if bastionF.Changed {
 		bastionId, err = client.FindInstanceByName(bastionF.Value.String())
 		if err != nil {
-			internal.HandleGenericError(err)
+			handleGenericError(err)
 			return
 		}
 
@@ -80,7 +72,7 @@ func jumpCobra(cmd *cobra.Command, args []string) {
 		client.Authenticate(bastionId, rsaPublicKey, "ec2-user")
 
 		if err = client.JumpThroughBastion(instanceId, bastionId, privateKey, "ec2-user"); err != nil {
-			internal.HandleGenericError(err)
+			handleGenericError(err)
 			return
 		}
 	} else {
@@ -88,7 +80,7 @@ func jumpCobra(cmd *cobra.Command, args []string) {
 
 
 		if err = client.Jump(instanceId, privateKey, "ec2-user"); err != nil {
-			internal.HandleGenericError(err)
+			handleGenericError(err)
 			return
 		}
 	}

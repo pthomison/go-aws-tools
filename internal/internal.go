@@ -5,10 +5,7 @@ import(
 	"github.com/aws/aws-sdk-go/aws/awserr"
 )
 
-func HandleGenericError(err error) {
-	fmt.Println(err)
-	return
-}
+
 
 func HandleAWSError(err error) {
 	if aerr, ok := err.(awserr.Error); ok {

@@ -20,6 +20,9 @@ clean-images:
 builder:
 	docker build . -t go-node:latest -f ./Dockerfile.builder	
 
+delve-auth:
+	dlv debug -- --profile blue-test auth --name integ-bastion --user ec2-user --pubkey /tmp/testing_key.pub
+
 docker-go: builder
 	docker run \
 	-it --rm \
@@ -36,15 +39,27 @@ docker-build: builder
 	go-node:latest \
 	make build
 
+docker-delve-auth: builder
+	docker run \
+	-it --rm \
+	-v ~/.aws:/root/.aws \
+	-v $(mkfile_dir):/go/src/$(package_path) \
+	-w /go/src/$(package_path) \
+	go-node:latest \
+	make delve-auth
+
 # For hacky dev use
-try-name-jump: clean docker-build 
+try-jump-name: clean docker-build 
 	./dist/go-aws-tools --profile blue-test jump --name integ-bastion
 
-try-id-jump: clean docker-build 
+try-jump-id: clean docker-build 
 	./dist/go-aws-tools --profile blue-test jump --id i-0daf40ab8c0b5eb5a
 
-try-bastion-jump: clean docker-build 
+try-jump-bastion: clean docker-build 
 	./dist/go-aws-tools --profile blue-test jump --name integ-delivery-k8s-worker-default --bastion integ-bastion
 
-try-fail: clean docker-build 
+try-jump-fail: clean docker-build 
 	./dist/go-aws-tools --profile blue-test jump --name integ-bastion --id i-deadbeef
+
+try-auth-name: clean docker-build
+	./dist/go-aws-tools --profile blue-test auth --name integ-bastion --user ec2-user --pubkey /tmp/id_rsa.pub

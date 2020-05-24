@@ -3,6 +3,9 @@ package pkg
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"strings"
+
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/service/ec2instanceconnect"
 	"github.com/aws/aws-sdk-go/aws"
@@ -14,7 +17,7 @@ import (
 func (c *client) Authenticate(instanceId string, pubKey *ssh.PublicKey, user string) error {
 	svc := ec2instanceconnect.New(c.sess)
 	az, _ := c.FindInstanceAZ(instanceId)
-	pub := string(ssh.MarshalAuthorizedKey(*pubKey))
+	pub := strings.TrimSpace(string(ssh.MarshalAuthorizedKey(*pubKey)))
 
 	input := &ec2instanceconnect.SendSSHPublicKeyInput{
 		AvailabilityZone: aws.String(az),
@@ -23,7 +26,9 @@ func (c *client) Authenticate(instanceId string, pubKey *ssh.PublicKey, user str
 		SSHPublicKey:     aws.String(pub),
 	}
 
-	_, err := svc.SendSSHPublicKey(input)
+	result, err := svc.SendSSHPublicKey(input)
+
+	fmt.Printf("%+v, %+v\n", result, err)
 	return err
 }
 

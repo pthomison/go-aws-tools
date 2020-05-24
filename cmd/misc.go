@@ -6,13 +6,17 @@ import(
 	// "os"
 	// "encoding/pem"
 	// "crypto/x509"
-	// "crypto/rsa"
+	"crypto/rsa"
 	"github.com/spf13/pflag"
 	"golang.org/x/crypto/ssh"
 	"encoding/base64"
 	"strings"
 
 	"encoding/binary"
+
+	"math/big"
+	// "bufio"
+	// "bytes"
 
 )
 
@@ -75,38 +79,24 @@ func loadPubKey(filename string) (*ssh.PublicKey, error) {
 	e               := byteDecoded[eStart:nLenStart]
 	n               := byteDecoded[nStart:]
 
-
-	fmt.Printf("key type len: %+v\n", keyTypeLen)
-	fmt.Printf("key type: %+v\n", keyType)
-
-	fmt.Printf("e len: %+v\n", keyTypeLen)
-	fmt.Printf("e: %+v\n", e)
-
-	fmt.Printf("n len: %+v\n", eLen)
-	fmt.Printf("n: %+v\n", n)
-
-	// for i, v := range byteDecoded {
-	// 	for i:=0;i<len(publicKeyHeader)
-	// }
-
-	// encoding
+	var bigN, bigE big.Int
 
 
-	// pubBlock, _ := pem.Decode(pub)
+	eNum, eNumErr := binary.Uvarint(e)
 
-	// fmt.Printf("%+v\n", pubBlock)
+	pubKey, err := ssh.NewPublicKey(&rsa.PublicKey{
+	    N: bigN.SetBytes(n),
+	    E: int(bigE.SetBytes(e).Uint64()),
+	})
 
-	// pubByte, err := x509.ParsePKIXPublicKey(pub)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// // pubKey, err := ssh.ParsePublicKey([]byte(pubKeyData))
-	// var rsaKey rsa.PublicKey
-
-	// fmt.Printf("%+v\n", ssh.Unmarshal(pub, &rsaKey))
-
-	pubKey, err := ssh.ParsePublicKey(pub)
+	_ = keyType
+	_ = nLen
+	_ = eNumErr
+	_ = eNum
 
 	return &pubKey, err
+}
+
+func loadPrivKey(filename string) (*rsa.PrivateKey) {
+	return nil
 }

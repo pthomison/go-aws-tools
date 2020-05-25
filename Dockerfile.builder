@@ -18,6 +18,7 @@ RUN go get -u github.com/aws/aws-sdk-go/...
 RUN go get golang.org/x/crypto/ssh
 RUN go get github.com/go-delve/delve/cmd/dlv
 
-RUN ssh-keygen -t rsa -N '' -f /tmp/testing_key
+# NOTE: Only use this key for testing purposes
+# RUN ssh-keygen -t rsa -N '' -f /tmp/testing_key
 
 CMD /bin/bash

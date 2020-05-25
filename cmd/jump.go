@@ -49,7 +49,7 @@ func jumpCobra(cmd *cobra.Command, args []string) {
 	commandError(err)
 
 	// generate temporary in memory key
-	privateKey, rsaPublicKey, err := awsUtils.GenerateInMemoryKey()
+	privateKey, rsaPublicKey, err := awsUtils.GenerateInMemoryKey(4096)
 	commandError(err)
 
 	// find user
@@ -57,7 +57,7 @@ func jumpCobra(cmd *cobra.Command, args []string) {
 
 	// if bastion flag present, tunnel
 	if bastionF.Changed {
-		bastionId, err := client.FindInstanceByName(bastionF.Value.String())
+		bastionId, err := client.FindInstanceIDByName(bastionF.Value.String())
 		commandError(err)
 
 		// authenicate to both instances before tunneling

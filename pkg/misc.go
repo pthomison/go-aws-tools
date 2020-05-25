@@ -1,15 +1,11 @@
 package pkg
 
 import (
-	// "fmt"
+	"errors"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/pthomison/go-aws-tools/internal"
-
-	// "github.com/aws/aws-sdk-go/aws/awserr"
-	"errors"
-	// "strings"
-	// "runtime"
 )
 
 func (c *Client) ListInstances() ([]*instanceDescription, error) {
@@ -46,8 +42,6 @@ func (c *Client) ListInstances() ([]*instanceDescription, error) {
 			})
 		}
 	}
-
-	// runtime.Breakpoint()
 
 	if err != nil {
 		internal.HandleAWSError(err)

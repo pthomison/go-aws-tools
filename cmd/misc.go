@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 	"os"
-	
-	"github.com/spf13/pflag"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 
 	awsUtils "github.com/pthomison/go-aws-tools/pkg"
 )
@@ -36,7 +36,7 @@ func resolveInstanceName(c *awsUtils.Client, nameFlag *pflag.Flag, idFlag *pflag
 	var instanceId string
 	var err error
 	if nameFlag.Changed {
-		instanceId, err = c.FindInstanceByName(nameFlag.Value.String())
+		instanceId, err = c.FindInstanceIDByName(nameFlag.Value.String())
 		if err != nil {
 			return "", err
 		}

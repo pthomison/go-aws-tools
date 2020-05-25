@@ -21,6 +21,9 @@ clean:
 clean-images:
 	docker rmi go-node:latest
 
+fmt:
+	go fmt ./...
+
 builder:
 	docker build . -t go-node:latest -f ./Dockerfile.builder	
 
@@ -38,6 +41,15 @@ docker-go: builder
 	-w /go/src/$(package_path) \
 	go-node:latest 
 	
+docker-fmt: builder
+	docker run \
+	-it --rm \
+	-v $(mkfile_dir):/go/src/$(package_path) \
+	-v $(HOME)/.aws:/root/.aws \
+	-w /go/src/$(package_path) \
+	go-node:latest \
+	make fmt
+
 docker-build: builder
 	docker run \
 	-it --rm \

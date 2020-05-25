@@ -8,19 +8,34 @@ import (
 )
 
 func (c *Client) FindInstancePrivateIP(instanceId string) (string, error) {
-	inst, _ := c.FindInstance(instanceId)
+	inst, err := c.FindInstance(instanceId)
+
+	if err != nil {
+		return "", err
+	}
+
 	ptr := inst.PrivateIpAddress
 	return *ptr, nil
 }
 
 func (c *Client) FindInstancePublicIP(instanceId string) (string, error) {
-	inst, _ := c.FindInstance(instanceId)
+	inst, err := c.FindInstance(instanceId)
+
+	if err != nil {
+		return "", err
+	}
+
 	ptr := inst.PublicIpAddress
 	return *ptr, nil
 }
 
 func (c *Client) FindInstanceAZ(instanceId string) (string, error) {
-	inst, _ := c.FindInstance(instanceId)
+	inst, err := c.FindInstance(instanceId)
+
+	if err != nil {
+		return "", err
+	}
+
 	ptr := inst.Placement.AvailabilityZone
 	return *ptr, nil
 }
@@ -44,7 +59,7 @@ func (c *Client) FindInstance(instanceId string) (*ec2.Instance, error) {
 	return instance, nil
 }
 
-func (c *Client) FindInstanceByName(instanceName string) (string, error) {
+func (c *Client) FindInstanceIDByName(instanceName string) (string, error) {
 	ec2_svc := ec2.New(c.sess)
 
 	output_inst, err := ec2_svc.DescribeInstances(&ec2.DescribeInstancesInput{

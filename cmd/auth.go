@@ -2,11 +2,9 @@ package cmd
 
 // WIP
 
-
 // const (
 // 	publicKeyHeader = "ssh-rsa"
 // )
-
 
 // import (
 // 	awsUtils "github.com/pthomison/go-aws-tools/pkg"

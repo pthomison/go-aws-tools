@@ -12,8 +12,8 @@ import (
 var listInstancesCmd = &cobra.Command{
 	Use:   "list-instances",
 	Short: "A very untested command to list instances w/ id, name, pub ip, priv ip",
-	Long: ``,
-	Run: listInstances,
+	Long:  ``,
+	Run:   listInstances,
 	Args:  cobra.ExactArgs(0),
 }
 

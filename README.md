@@ -7,4 +7,26 @@ I had implemented most of this functionality in bash, but turns out dealing with
 A true README/man is tbd, but luckily cobra has a decent help menu built in. For the time being, here's the quick version 
 
 **jump**: authenticate & ssh into an instance; can tunnel through a bastion
+
 **list-instances**: list out all running/pending instances in an account. Prints Name, ID, public IP, private IP
+
+	Usage:
+	  go-aws-tools [command]
+
+	Available Commands:
+	  help           Help about any command
+	  jump           Utility to authenticate & connect to selected instances w/ an in-memory key && ec2 instance connect
+	  list-instances A very untested command to list instances w/ id, name, pub ip, priv ip
+
+	Flags:
+	  -h, --help             help for go-aws-tools
+	      --profile string   aws profile to use
+	      --region string    aws region to use (default "us-west-2")
+
+	Use "go-aws-tools [command] --help" for more information about a command.
+
+
+## Building && Development
+
+Refer to the makefile for a list of commands. If you don't have a working go environment, just use the docker wrappers
+

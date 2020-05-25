@@ -2,11 +2,11 @@ dist_dir := $(CURDIR)/dist
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(dir $(mkfile_path))
 
-# os := darwin
-# platform := amd64
-
-os := linux
+os := darwin
 platform := amd64
+
+# os := linux
+# platform := amd64
 
 package_name := go-aws-tools
 package_path := github.com/pthomison/$(package_name)

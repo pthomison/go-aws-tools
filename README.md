@@ -58,3 +58,4 @@ A true README/man is tbd, but luckily cobra has a decent help menu built in. For
 
 Refer to the makefile for a list of commands. If you don't have a working go environment, just use the docker wrappers
 
+NOTE: be sure to update the OS/ARCH flags in the makefile to match your system

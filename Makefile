@@ -74,17 +74,11 @@ docker-delve-list-instances: builder
 try-jump-name: clean docker-build 
 	./dist/go-aws-tools --profile blue-test jump --name integ-bastion
 
-try-jump-id: clean docker-build 
-	./dist/go-aws-tools --profile blue-test jump --id i-0daf40ab8c0b5eb5a
-
 try-jump-bastion: clean docker-build 
 	./dist/go-aws-tools --profile blue-test jump --name integ-delivery-k8s-worker-default --bastion integ-bastion
 
 try-jump-fail: clean docker-build 
 	./dist/go-aws-tools --profile blue-test jump --name integ-bastion --id i-deadbeef
-
-try-auth-name: clean docker-build
-	./dist/go-aws-tools --profile personal auth --name blog --user ec2-user --pubkey ~/.ssh/id_rsa.pub
 
 try-list-instances: clean docker-build
 	./dist/go-aws-tools --profile personal list-instances

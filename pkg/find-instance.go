@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/pthomison/go-aws-tools/internal"
 )
 
 func (c *Client) FindInstancePrivateIP(instanceId string) (string, error) {
@@ -50,7 +49,7 @@ func (c *Client) FindInstance(instanceId string) (*ec2.Instance, error) {
 	})
 
 	if err != nil {
-		internal.HandleAWSError(err)
+		handleAWSError(err)
 		return nil, err
 	}
 
@@ -72,7 +71,7 @@ func (c *Client) FindInstanceIDByName(instanceName string) (string, error) {
 	})
 
 	if err != nil {
-		internal.HandleAWSError(err)
+		handleAWSError(err)
 		return "", err
 	}
 

@@ -11,7 +11,7 @@ platform := amd64
 package_name := go-aws-tools
 package_path := github.com/pthomison/$(package_name)
 
-build:
+build: fmt vet
 	GOOS=$(os) GOARCH=$(platform) go build -o $(dist_dir)/$(package_name)
 
 clean:
@@ -23,6 +23,9 @@ clean-images:
 
 fmt:
 	go fmt ./...
+
+vet:
+	go vet ./...
 
 builder:
 	docker build . -t go-node:latest -f ./Dockerfile.builder	

@@ -2,10 +2,11 @@ package pkg
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/pthomison/go-aws-tools/internal"
 )
 
 func (c *Client) ListInstances() ([]*instanceDescription, error) {
@@ -44,7 +45,7 @@ func (c *Client) ListInstances() ([]*instanceDescription, error) {
 	}
 
 	if err != nil {
-		internal.HandleAWSError(err)
+		handleAWSError(err)
 		return nil, err
 	}
 
@@ -72,4 +73,18 @@ func findTagValue(instance *ec2.Instance, tagName string) (string, error) {
 	}
 
 	return "", errors.New("Tag Not Found")
+}
+
+func handleAWSError(err error) {
+	if aerr, ok := err.(awserr.Error); ok {
+		switch aerr.Code() {
+		default:
+			fmt.Println(aerr.Error())
+		}
+	} else {
+		// Print the error, cast err to awserr.Error to get the Code and
+		// Message from an error.
+		fmt.Println(err.Error())
+	}
+	return
 }

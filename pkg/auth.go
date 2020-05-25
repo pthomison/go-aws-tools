@@ -7,14 +7,14 @@ import (
 
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/service/ec2instanceconnect"
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/ec2instanceconnect"
 
 	// "github.com/pthomison/go-aws-tools/internal/helper"
 	"golang.org/x/crypto/ssh"
 )
 
-func (c *client) Authenticate(instanceId string, pubKey *ssh.PublicKey, user string) error {
+func (c *Client) Authenticate(instanceId string, pubKey *ssh.PublicKey, user string) error {
 	svc := ec2instanceconnect.New(c.sess)
 	az, _ := c.FindInstanceAZ(instanceId)
 	pub := strings.TrimSpace(string(ssh.MarshalAuthorizedKey(*pubKey)))

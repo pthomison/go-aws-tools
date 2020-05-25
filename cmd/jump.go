@@ -7,82 +7,71 @@ import (
 )
 
 const (
-	jumpBastionFlag = "bastion"
+	jumpBastionFlag = "bastion-name"
 	jumpNameFlag    = "name"
 	jumpIdFlag      = "id"
+	jumpUserFlag    = "user"
 )
 
 var jumpCmd = &cobra.Command{
 	Use:   "jump",
-	Short: "",
-	Long: ``,
-	Run: jumpCobra,
-	Args: cobra.ExactArgs(0),
+	Short: "Utility to authenticate & connect to selected instances w/ an in-memory key && ec2 instance connect",
+	Long:  ``,
+	Run:   jumpCobra,
+	Args:  cobra.ExactArgs(0),
 }
 
 func init() {
 	rootCmd.AddCommand(jumpCmd)
-	jumpCmd.PersistentFlags().String(jumpBastionFlag, "", "")
-	jumpCmd.PersistentFlags().String(jumpNameFlag, "", "")
-	jumpCmd.PersistentFlags().String(jumpIdFlag, "", "")
+	jumpCmd.PersistentFlags().String(jumpBastionFlag, "", "if present, will attempt to tunnel through bastion")
+	jumpCmd.PersistentFlags().String(jumpNameFlag, "", "instance selector; mutually exclusive with "+jumpIdFlag)
+	jumpCmd.PersistentFlags().String(jumpIdFlag, "", "instance selector; mutually exclusive with "+jumpNameFlag)
+	jumpCmd.PersistentFlags().String(jumpUserFlag, "ec2-user", "user override")
+
 }
 
 func jumpCobra(cmd *cobra.Command, args []string) {
 	bastionF := cmd.Flags().Lookup(jumpBastionFlag)
-	nameF    := cmd.Flags().Lookup(jumpNameFlag)
-	idF      := cmd.Flags().Lookup(jumpIdFlag)
+	nameF := cmd.Flags().Lookup(jumpNameFlag)
+	idF := cmd.Flags().Lookup(jumpIdFlag)
+	userF := cmd.Flags().Lookup(jumpUserFlag)
 
 	// mutually exclussive flag checking
-	mutualExclusiveFlag(nameF, idF)
-
-	var instanceId string
-	var bastionId string
-	var err error
+	err := mutualExclusiveFlag(cmd, nameF, idF)
+	commandError(err)
 
 	// initialize client
-	client := awsUtils.InitializeClient(awsProfile, awsRegion)
+	client, err := awsUtils.InitializeClient(awsProfile, awsRegion)
+	commandError(err)
 
 	// determine instance id
-	if nameF.Changed {
-		instanceId, err = client.FindInstanceByName(nameF.Value.String())
-
-		if err != nil {
-			handleGenericError(err)
-			return
-		}
-	} else {
-		instanceId = idF.Value.String()
-	}
+	instanceId, err := resolveInstanceName(client, nameF, idF)
+	commandError(err)
 
 	// generate temporary in memory key
 	privateKey, rsaPublicKey, err := awsUtils.GenerateInMemoryKey()
-	if err != nil {
-		handleGenericError(err)
-		return
-	}
+	commandError(err)
 
+	// find user
+	user := userF.Value.String()
+
+	// if bastion flag present, tunnel
 	if bastionF.Changed {
-		bastionId, err = client.FindInstanceByName(bastionF.Value.String())
-		if err != nil {
-			handleGenericError(err)
-			return
-		}
+		bastionId, err := client.FindInstanceByName(bastionF.Value.String())
+		commandError(err)
 
-		client.Authenticate(instanceId, rsaPublicKey, "ec2-user")
-		client.Authenticate(bastionId, rsaPublicKey, "ec2-user")
+		// authenicate to both instances before tunneling
+		client.Authenticate(instanceId, rsaPublicKey, user)
+		client.Authenticate(bastionId, rsaPublicKey, user)
 
-		if err = client.JumpThroughBastion(instanceId, bastionId, privateKey, "ec2-user"); err != nil {
-			handleGenericError(err)
-			return
-		}
+		// tunnel
+		err = client.JumpThroughBastion(instanceId, bastionId, privateKey, user)
+		commandError(err)
 	} else {
-		client.Authenticate(instanceId, rsaPublicKey, "ec2-user")
-
-
-		if err = client.Jump(instanceId, privateKey, "ec2-user"); err != nil {
-			handleGenericError(err)
-			return
-		}
+		// authenticate && jump
+		client.Authenticate(instanceId, rsaPublicKey, user)
+		client.Jump(instanceId, privateKey, user)
+		commandError(err)
 	}
 
 }

@@ -13,7 +13,7 @@ var awsRegion string
 var rootCmd = &cobra.Command{
 	Use:   "aws-tools",
 	Short: "A brief description",
-	Long: `A longer description`,
+	Long:  `A longer description`,
 }
 
 func Execute() {

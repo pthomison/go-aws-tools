@@ -1,13 +1,14 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-
 	awsUtils "github.com/pthomison/go-aws-tools/pkg"
+	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
 )
 
 const (
-	authKeyFlag     = "pubkey"
+	authPubKeyFlag  = "pubkey"
+	authPrivKeyFlag = "privkey"
 	authNameFlag    = "name"
 	authIdFlag      = "id"
 	authUserFlag    = "user"
@@ -15,52 +16,57 @@ const (
 
 var authCmd = &cobra.Command{
 	Use:   "auth",
-	Short: "",
-	Long: ``,
-	Run: authCobra,
-	Args: cobra.ExactArgs(0),
+	Short: "Authenticates to an ec2-instance over instance-connect",
+	Long:  ``,
+	Run:   authCobra,
+	Args:  cobra.ExactArgs(0),
 }
 
 func init() {
+	// Attach Subcommand
 	rootCmd.AddCommand(authCmd)
-	authCmd.PersistentFlags().String(authKeyFlag, "", "")
+
+	// Create Subcommand Flags
+	authCmd.PersistentFlags().String(authPubKeyFlag, "", "")
+	authCmd.PersistentFlags().String(authPrivKeyFlag, "", "")
 	authCmd.PersistentFlags().String(authNameFlag, "", "")
 	authCmd.PersistentFlags().String(authIdFlag, "", "")
 	authCmd.PersistentFlags().String(authUserFlag, "", "")
 }
 
 func authCobra(cmd *cobra.Command, args []string) {
-	keyF     := cmd.Flags().Lookup(authKeyFlag)
-	nameF    := cmd.Flags().Lookup(authNameFlag)
-	idF      := cmd.Flags().Lookup(authIdFlag)
-	userF    := cmd.Flags().Lookup(authUserFlag)
-
-
-	_, _ = keyF, userF
+	// Resolve Flags
+	pubKeyF := cmd.Flags().Lookup(authPubKeyFlag)
+	privKeyF := cmd.Flags().Lookup(authPrivKeyFlag)
+	nameF := cmd.Flags().Lookup(authNameFlag)
+	idF := cmd.Flags().Lookup(authIdFlag)
+	userF := cmd.Flags().Lookup(authUserFlag)
 
 	// mutually exclussive flag checking
-	mutualExclusiveFlag(nameF, idF)
+	mutualExclusiveFlag(cmd, nameF, idF)
+	mutualExclusiveFlag(cmd, pubKeyF, privKeyF)
 
-	var instanceId string
+	// Needed for if block initialization
+	// var  string
 	var err error
 
 	// initialize client
-	client := awsUtils.InitializeClient(awsProfile, awsRegion)
+	client, err := awsUtils.InitializeClient(awsProfile, awsRegion)
+	if err != nil {
+		handleGenericError(err)
+		return
+	}
 
 	// determine instance id
-	if nameF.Changed {
-		instanceId, err = client.FindInstanceByName(nameF.Value.String())
-		if err != nil {
-			handleGenericError(err)
-			return
-		}
-	} else {
-		instanceId = idF.Value.String()
+	instanceId, err := resolveInstanceName(client, nameF, idF)
+	if err != nil {
+		handleGenericError(err)
+		return
 	}
 
 	// _, rsaPublicKey, err := awsUtils.GenerateInMemoryKey()
 
-	rsaPublicKey, err := loadPubKey(keyF.Value.String())
+	rsaPublicKey, err := loadPubKey(pubKeyF.Value.String())
 
 	if err != nil {
 		handleGenericError(err)
@@ -69,7 +75,3 @@ func authCobra(cmd *cobra.Command, args []string) {
 
 	client.Authenticate(instanceId, rsaPublicKey, userF.Value.String())
 }
-
-
-
-

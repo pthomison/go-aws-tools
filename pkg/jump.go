@@ -1,16 +1,16 @@
 package pkg
 
 import (
+	"crypto/rsa"
 	"fmt"
 	"io"
 	"os"
-	"crypto/rsa"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-func (c *client) Jump(instanceId string, privKey *rsa.PrivateKey, username string) error {
+func (c *Client) Jump(instanceId string, privKey *rsa.PrivateKey, username string) error {
 	signer, err := ssh.NewSignerFromKey(privKey)
 	if err != nil {
 		return fmt.Errorf("Can't Create Signer From Private Key: %w", err)
@@ -38,7 +38,7 @@ func (c *client) Jump(instanceId string, privKey *rsa.PrivateKey, username strin
 	return shell(client)
 }
 
-func (c *client) JumpThroughBastion(instanceId string, bastionId string, privKey *rsa.PrivateKey, username string) error {
+func (c *Client) JumpThroughBastion(instanceId string, bastionId string, privKey *rsa.PrivateKey, username string) error {
 	signer, err := ssh.NewSignerFromKey(privKey)
 	if err != nil {
 		return fmt.Errorf("Can't Create Signer From Private Key: %w", err)
@@ -88,7 +88,7 @@ func tunnel(instanceAddress string, bastionAddress string, sshClientConfig *ssh.
 
 	ncc, chans, reqs, err := ssh.NewClientConn(instanceConn, instanceAddress, sshClientConfig)
 	if err != nil {
-	    return nil, fmt.Errorf("Can't Connect SSH To Instance: %w", err)
+		return nil, fmt.Errorf("Can't Connect SSH To Instance: %w", err)
 	}
 
 	instanceClient := ssh.NewClient(ncc, chans, reqs)
@@ -99,8 +99,8 @@ func tunnel(instanceAddress string, bastionAddress string, sshClientConfig *ssh.
 func shell(client *ssh.Client) error {
 	// Establish an SSH Session
 	session, err := client.NewSession()
-	if err != nil {  
-	    return fmt.Errorf("Failed to create session: %w\n", err)
+	if err != nil {
+		return fmt.Errorf("Failed to create session: %w\n", err)
 	}
 	defer session.Close()
 
@@ -126,7 +126,7 @@ func shell(client *ssh.Client) error {
 		session.Close()
 		return fmt.Errorf("request for pseudo terminal failed: %s", err)
 	}
-	
+
 	// Connect All Your IO
 	if err := setupIO(session); err != nil {
 		return err

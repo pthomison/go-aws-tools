@@ -1,15 +1,13 @@
 package internal
 
-import(
+import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 )
 
-
-
 func HandleAWSError(err error) {
 	if aerr, ok := err.(awserr.Error); ok {
-	switch aerr.Code() {
+		switch aerr.Code() {
 		default:
 			fmt.Println(aerr.Error())
 		}

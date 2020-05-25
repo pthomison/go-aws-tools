@@ -11,9 +11,9 @@ var awsProfile string
 var awsRegion string
 
 var rootCmd = &cobra.Command{
-	Use:   "aws-tools",
-	Short: "A brief description",
-	Long:  `A longer description`,
+	Use:   "go-aws-tools",
+	Short: "",
+	Long:  ``,
 }
 
 func Execute() {

@@ -28,13 +28,21 @@ func (c *Client) ListInstances() ([]*instanceDescription, error) {
 
 	for _, resv := range instances.Reservations {
 		for _, inst := range resv.Instances {
-			id := *inst.InstanceId
+			var id, name, privateIP, publicIP string
+			id = *inst.InstanceId
 			name, err := findTagValue(inst, "Name")
 			if err != nil {
 				return nil, err
 			}
-			privateIP := *inst.PrivateIpAddress
-			publicIP := *inst.PublicIpAddress
+
+			if inst.PrivateIpAddress != nil {
+				privateIP = *inst.PrivateIpAddress
+			}
+
+			if inst.PublicIpAddress != nil {
+				publicIP = *inst.PublicIpAddress
+			}
+
 			instanceDescriptions = append(instanceDescriptions, &instanceDescription{
 				instanceId:       id,
 				instanceName:     name,
@@ -60,8 +68,11 @@ type instanceDescription struct {
 }
 
 func (desc *instanceDescription) Str() string {
-	s := desc.instanceName + " : " + desc.instanceId + " : " + desc.privateIpAddress + " : " + desc.publicIpAddress
-	return s
+	if desc.publicIpAddress == "" {
+		return desc.instanceName + " : " + desc.instanceId + " : " + desc.privateIpAddress
+	} else {
+		return desc.instanceName + " : " + desc.instanceId + " : " + desc.privateIpAddress + " : " + desc.publicIpAddress
+	}
 }
 
 func findTagValue(instance *ec2.Instance, tagName string) (string, error) {

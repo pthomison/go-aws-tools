@@ -1,5 +1,6 @@
 # go-aws-tools
-This is repo is the result of a quick and dirty exploration golang, the AWS sdk, & cobra
+This is repo is the result of a quick and dirty exploration golang, the AWS sdk, & cobra. 
+
 I had implemented most of this functionality in bash, but turns out dealing with complicated data structs in a string based interpreter is a bad idea (shocking I know)
 
 ## Commands

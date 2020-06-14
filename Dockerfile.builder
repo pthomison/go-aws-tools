@@ -13,12 +13,6 @@ ENV PATH /go/bin:$PATH
 ENV GOPATH /go/
 ENV GOCACHE /tmp/
 
-RUN go get github.com/spf13/cobra/cobra
-RUN go get -u github.com/aws/aws-sdk-go/...
-RUN go get golang.org/x/crypto/ssh
-RUN go get github.com/go-delve/delve/cmd/dlv
 
-# NOTE: Only use this key for testing purposes
-# RUN ssh-keygen -t rsa -N '' -f /tmp/testing_key
 
 CMD /bin/bash

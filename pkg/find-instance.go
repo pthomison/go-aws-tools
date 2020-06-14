@@ -67,6 +67,10 @@ func (c *Client) FindInstanceIDByName(instanceName string) (string, error) {
 				Name:   aws.String("tag:Name"),
 				Values: []*string{aws.String(instanceName)},
 			},
+			{
+				Name:   aws.String("instance-state-name"),
+				Values: []*string{aws.String("pending"), aws.String("running"),},
+			},
 		},
 	})
 

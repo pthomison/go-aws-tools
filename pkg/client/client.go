@@ -1,4 +1,4 @@
-package pkg
+package client
 
 import (
 	"github.com/aws/aws-sdk-go/aws"

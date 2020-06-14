@@ -6,7 +6,6 @@ import (
 	"os"
 )
 
-var cfgFile string
 var awsProfile string
 var awsRegion string
 

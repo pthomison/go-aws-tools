@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	awsUtils "github.com/pthomison/go-aws-tools/pkg"
+	awsUtils "github.com/pthomison/go-aws-tools/pkg/client"
 )
 
 // cobra doesn't appear to support this ootb, so this is a quick and dirty check w/ error

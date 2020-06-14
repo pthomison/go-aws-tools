@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	awsUtils "github.com/pthomison/go-aws-tools/pkg"
+	awsUtils "github.com/pthomison/go-aws-tools/pkg/client"
 )
 
 const (

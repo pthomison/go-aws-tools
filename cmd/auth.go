@@ -7,7 +7,7 @@ package cmd
 // )
 
 // import (
-// 	awsUtils "github.com/pthomison/go-aws-tools/pkg"
+// 	awsUtils "github.com/pthomison/go-aws-tools/pkg/client"
 // 	"github.com/spf13/cobra"
 // 	flag "github.com/spf13/pflag"
 // )

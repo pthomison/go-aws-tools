@@ -11,6 +11,9 @@ platform := amd64
 package_name := go-aws-tools
 package_path := github.com/pthomison/$(package_name)
 
+install: fmt vet
+	go install .
+
 build: fmt vet
 	GOOS=$(os) GOARCH=$(platform) go build -o $(dist_dir)/$(package_name)
 

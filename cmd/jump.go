@@ -36,9 +36,8 @@ func jumpCobra(cmd *cobra.Command, args []string) {
 	idF := cmd.Flags().Lookup(jumpIdFlag)
 	userF := cmd.Flags().Lookup(jumpUserFlag)
 
-	// mutually exclussive flag checking
-	err := mutualExclusiveFlag(cmd, nameF, idF)
-	commandError(err)
+	// flag checking
+	mutualExclusiveFlag(cmd, nameF, idF)
 
 	// initialize client
 	client, err := awsUtils.InitializeClient(awsProfile, awsRegion)

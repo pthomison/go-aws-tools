@@ -11,15 +11,21 @@ import (
 )
 
 // cobra doesn't appear to support this ootb, so this is a quick and dirty check w/ error
-func mutualExclusiveFlag(cmd *cobra.Command, flagA *pflag.Flag, flagB *pflag.Flag) error {
+func mutualExclusiveFlag(cmd *cobra.Command, flagA *pflag.Flag, flagB *pflag.Flag) {
 	if !flagA.Changed && !flagB.Changed {
 		cmd.Help()
-		return fmt.Errorf("Must supply a target")
+		os.Exit(1)
 	} else if flagA.Changed && flagB.Changed {
 		cmd.Help()
-		return fmt.Errorf("Must supply a single target")
+		os.Exit(1)
 	}
-	return nil
+}
+
+func requiredFlag(cmd *cobra.Command, flag *pflag.Flag) {
+	if !flag.Changed {
+		cmd.Help()
+		os.Exit(1)
+	}
 }
 
 // i got really tired of writing err!=nil blocks
@@ -44,4 +50,13 @@ func resolveInstanceName(c *awsUtils.Client, nameFlag *pflag.Flag, idFlag *pflag
 		instanceId = idFlag.Value.String()
 	}
 	return instanceId, nil
+}
+
+func tagLookup(tags []*ec2.Tag, key string) *ec2.Tag {
+	for _, v := range tags {
+		if *v.Key == key {
+			return v
+		}
+	}
+	return nil
 }

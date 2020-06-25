@@ -13,7 +13,7 @@ var listInstancesCmd = &cobra.Command{
 	Use:   "list-instances",
 	Short: "A very untested command to list instances w/ id, name, pub ip, priv ip",
 	Long:  ``,
-	Run:   listInstances,
+	Run:   listInstancesCobra,
 	Args:  cobra.ExactArgs(0),
 }
 
@@ -21,7 +21,7 @@ func init() {
 	rootCmd.AddCommand(listInstancesCmd)
 }
 
-func listInstances(cmd *cobra.Command, args []string) {
+func listInstancesCobra(cmd *cobra.Command, args []string) {
 	fmt.Println("list-instances called")
 
 	// initialize client

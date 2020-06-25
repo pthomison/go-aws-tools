@@ -60,6 +60,23 @@ func (c *Client) ListInstances() ([]*instanceDescription, error) {
 	return instanceDescriptions, nil
 }
 
+func (c *Client) NameResource(resourceId string, name string) error {
+	tagInput := &ec2.CreateTagsInput{
+		Resources: []*string{
+			aws.String(resourceId),
+		},
+		Tags: []*ec2.Tag{
+			{
+				Key:   aws.String("Name"),
+				Value: aws.String(name),
+			},
+		},
+	}
+
+	_, err := svc.CreateTags(tagInput)
+	return err
+}
+
 type instanceDescription struct {
 	instanceId       string
 	instanceName     string
@@ -98,4 +115,13 @@ func handleAWSError(err error) {
 		fmt.Println(err.Error())
 	}
 	return
+}
+
+func tagLookup(tags []*ec2.Tag, key string) *ec2.Tag {
+	for _, v := range tags {
+		if *v.Key == key {
+			return v
+		}
+	}
+	return nil
 }

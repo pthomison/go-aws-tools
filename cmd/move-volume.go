@@ -17,9 +17,6 @@ const (
 
 	moveNewAvailabilityZoneFlag      = "availability-zone"
 	moveNewAvailabilityZoneShortFlag = "a"
-
-	// moveVolumeTypeFlag      = "type"
-	// moveVolumeTypeShortFlag = "t"
 )
 
 var moveVolumeCmd = &cobra.Command{
@@ -38,11 +35,11 @@ func init() {
 }
 
 func moveVolumeCobra(cmd *cobra.Command, args []string) {
+	// flag checking
 	volumeNameF := cmd.Flags().Lookup(moveVolumeNameFlag)
 	volumeIdF := cmd.Flags().Lookup(moveVolumeIdFlag)
 	newAvailabilityZoneF := cmd.Flags().Lookup(moveNewAvailabilityZoneFlag)
 
-	// flag checking
 	mutualExclusiveFlag(cmd, volumeNameF, volumeIdF)
 	requiredFlag(cmd, newAvailabilityZoneF)
 
@@ -59,19 +56,19 @@ func moveVolumeCobra(cmd *cobra.Command, args []string) {
 	// lookup volume
 	oldVol, err := client.FindVolume(volumeId)
 	commandError(err)
-	fmt.Printf("Volume: %+v\n", vol)
+	fmt.Printf("Volume: %+v\n", oldVol)
 
 	// create snapshot
-	snapshot, err := client.SnapshotVolume(vol)
+	snapshot, err := client.SnapshotVolume(oldVol)
 	commandError(err)
 	fmt.Printf("Snapshot: %+v\n", snapshot)
 
 	// create volume from snapshot
-	newVol, err := client.CreateVolumeFromSnapshot(snapshot, vol, newAZ)
+	newVol, err := client.CreateVolumeFromSnapshot(snapshot, oldVol, newAZ)
 	commandError(err)
 	fmt.Printf("newVol: %+v\n", newVol)
 
 	// rename old volume
-	err = client.NameResource(volumeId, *tagLookup(oldVol.Tags, "Name").Value + "-old")
+	err = client.NameResource(volumeId, *tagLookup(oldVol.Tags, "Name").Value+"-old")
 	commandError(err)
 }

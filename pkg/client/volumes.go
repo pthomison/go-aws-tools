@@ -111,7 +111,5 @@ func (c *Client) CreateVolumeFromSnapshot(snapshot *ec2.Snapshot, oldVolume *ec2
 		volInput.Iops = oldVolume.Iops
 	}
 
-	fmt.Printf("%+v\n", result)
-
 	return svc.CreateVolume(volInput)
 }

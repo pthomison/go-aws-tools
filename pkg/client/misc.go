@@ -61,6 +61,8 @@ func (c *Client) ListInstances() ([]*instanceDescription, error) {
 }
 
 func (c *Client) NameResource(resourceId string, name string) error {
+	svc := ec2.New(c.sess)
+
 	tagInput := &ec2.CreateTagsInput{
 		Resources: []*string{
 			aws.String(resourceId),

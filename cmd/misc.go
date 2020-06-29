@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
